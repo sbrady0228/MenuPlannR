@@ -1,0 +1,10 @@
+name: menuplannr
+title:
+username:
+account: sbrady
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2586147
+bundleId: 3406811
+url: https://sbrady.shinyapps.io/menuplannr/
+when: 1595078573.0412
