@@ -36,6 +36,9 @@ ui <- fluidPage(
            h1("Meat Section"),
            br(),
            verbatimTextOutput("meat"),
+           h1("Grocery Section"),
+           br(),
+           verbatimTextOutput("grocery")
         )
     )
 )
@@ -122,12 +125,29 @@ server <- function(input, output) {
                return(writeLines(new$Item)),
                return(writeLines("None")))
     })
+    output$grocery <- renderPrint({
+        if(is.null(input$recipes)){
+            return(writeLines("None"))
+        }
+        new <- as.data.frame(filtered())%>%
+            filter(.$Store.Section == "Grocery")%>%
+            mutate(Item = paste0(.$Ingredient," ", .$Amount))
+        ifelse(length(new$Ingredient) > 0,
+               return(writeLines(new$Item)),
+               return(writeLines("None")))
+    })
     
     
     
     
     
 }
+
+# To deploy onto website
+# library(rsconnect)
+# rsconnect::setAccountInfo(name='sbrady', token='A6904AE34F71DA5BC0AF222C7223141E', secret='uZq5+IpKSSDqlFFyMkirNWDo2z8XlKYaRZmZ5hzF')
+# deployApp()
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)
