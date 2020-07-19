@@ -24,8 +24,9 @@ ui <- fluidPage(
         ),
 
         # Output the shopping list table
-        mainPanel(
-           dataTableOutput("shoppinglist")
+        mainPanel(h1("Deli Section"),
+                  br(),
+           verbatimTextOutput("deli")
         )
     )
 )
@@ -48,7 +49,7 @@ server <- function(input, output) {
             filter(Name %in% input$recipes) %>%
             select(Store.Section,Ingredient,Shopping.Quantity, Shopping.Metric)%>%
             group_by(Store.Section, Ingredient, Shopping.Metric) %>%
-            summarise(Shopping.Quantity = sum(Shopping.Quantity))%>%
+            mutate(Shopping.Quantity = sum(Shopping.Quantity))%>%
             ungroup()%>%
             mutate(Store.Section = factor(.$Store.Section,levels = c("Produce","Deli","Meat","Grocery","Dairy")))%>%
             mutate(Amount = paste0("(",.$Shopping.Quantity," ",.$Shopping.Metric,")")) %>%
@@ -57,10 +58,15 @@ server <- function(input, output) {
             
     })
     
-    
-    output$shoppinglist <- renderDataTable({
-        filtered()
+    output$deli <- renderPrint({
+        new <- as.data.frame(filtered())%>%
+            filter(.$Store.Section == "Deli")
+        writeLines(new$Ingredient)
     })
+    
+    
+    
+    
     
 }
 
