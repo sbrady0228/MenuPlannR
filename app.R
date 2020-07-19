@@ -26,7 +26,16 @@ ui <- fluidPage(
         # Output the shopping list table
         mainPanel(h1("Deli Section"),
                   br(),
-           verbatimTextOutput("deli")
+           verbatimTextOutput("deli"),
+           h1("Dairy Section"),
+           br(),
+           verbatimTextOutput("dairy"),
+           h1("Produce Section"),
+           br(),
+           verbatimTextOutput("produce"),
+           h1("Meat Section"),
+           br(),
+           verbatimTextOutput("meat"),
         )
     )
 )
@@ -59,9 +68,59 @@ server <- function(input, output) {
     })
     
     output$deli <- renderPrint({
+        if(is.null(input$recipes)){
+            return(writeLines("None"))
+        }
         new <- as.data.frame(filtered())%>%
-            filter(.$Store.Section == "Deli")
-        writeLines(new$Ingredient)
+            filter(.$Store.Section == "Deli")%>%
+            mutate(Item = paste0(.$Ingredient," ", .$Amount))
+        ifelse(length(new$Ingredient) > 0,
+               return(writeLines(new$Item)),
+                  return(writeLines("None")))
+    })
+    output$dairy <- renderPrint({
+        if(is.null(input$recipes)){
+            return(writeLines("None"))
+        }
+        new <- as.data.frame(filtered())%>%
+            filter(.$Store.Section == "Dairy")%>%
+            mutate(Item = paste0(.$Ingredient," ", .$Amount))
+        ifelse(length(new$Ingredient) > 0,
+               return(writeLines(new$Item)),
+               return(writeLines("None")))
+    })
+    output$grocery <- renderPrint({
+        if(is.null(input$recipes)){
+            return(writeLines("None"))
+        }
+        new <- as.data.frame(filtered())%>%
+            filter(.$Store.Section == "Grocery")%>%
+            mutate(Item = paste0(.$Ingredient," ", .$Amount))
+        ifelse(length(new$Ingredient) > 0,
+               return(writeLines(new$Item)),
+               return(writeLines("None")))
+    })
+    output$produce <- renderPrint({
+        if(is.null(input$recipes)){
+            return(writeLines("None"))
+        }
+        new <- as.data.frame(filtered())%>%
+            filter(.$Store.Section == "Produce")%>%
+            mutate(Item = paste0(.$Ingredient," ", .$Amount))
+        ifelse(length(new$Ingredient) > 0,
+               return(writeLines(new$Item)),
+               return(writeLines("None")))
+    })
+    output$meat <- renderPrint({
+        if(is.null(input$recipes)){
+            return(writeLines("None"))
+        }
+        new <- as.data.frame(filtered())%>%
+            filter(.$Store.Section == "Meat")%>%
+            mutate(Item = paste0(.$Ingredient," ", .$Amount))
+        ifelse(length(new$Ingredient) > 0,
+               return(writeLines(new$Item)),
+               return(writeLines("None")))
     })
     
     
