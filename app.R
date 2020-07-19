@@ -10,7 +10,7 @@
 library(shiny)
 library(dplyr)
 library(DT)
-in_ingredients <- read.csv("data/20200717_ingredients.csv")
+in_ingredients <- read.csv("data/20200719_ingredients.csv")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -61,7 +61,7 @@ server <- function(input, output) {
             filter(Name %in% input$recipes) %>%
             select(Store.Section,Ingredient,Shopping.Quantity, Shopping.Metric)%>%
             group_by(Store.Section, Ingredient, Shopping.Metric) %>%
-            mutate(Shopping.Quantity = sum(Shopping.Quantity))%>%
+            summarize(Shopping.Quantity = sum(Shopping.Quantity), .groups = 'drop')%>%
             ungroup()%>%
             mutate(Store.Section = factor(.$Store.Section,levels = c("Produce","Deli","Meat","Grocery","Dairy")))%>%
             mutate(Amount = paste0("(",.$Shopping.Quantity," ",.$Shopping.Metric,")")) %>%
