@@ -5,12 +5,12 @@
 # Find out more about building applications with Shiny here:
 #
 #    http://shiny.rstudio.com/
-# test
+#
 
 library(shiny)
 library(dplyr)
 library(DT)
-in_ingredients <- read.csv("data/20200719_ingredients.csv")
+in_ingredients <- read.csv("data/20200808_ingredients.csv")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -38,7 +38,14 @@ ui <- fluidPage(
            verbatimTextOutput("meat"),
            h1("Grocery Section"),
            br(),
-           verbatimTextOutput("grocery")
+           verbatimTextOutput("grocery"),
+           h1("Bakery Section"),
+           br(),
+           verbatimTextOutput("bakery"),
+           h1("Frozen section"),
+           br(),
+           verbatimTextOutput("frozen")
+           
         )
     )
 )
@@ -63,10 +70,8 @@ server <- function(input, output) {
             group_by(Store.Section, Ingredient, Shopping.Metric) %>%
             summarize(Shopping.Quantity = sum(Shopping.Quantity), .groups = 'drop')%>%
             ungroup()%>%
-            mutate(Store.Section = factor(.$Store.Section,levels = c("Produce","Deli","Meat","Grocery","Dairy")))%>%
             mutate(Amount = paste0("(",.$Shopping.Quantity," ",.$Shopping.Metric,")")) %>%
-            select(Store.Section, Ingredient, Amount) %>%
-            arrange(Store.Section)
+            select(Store.Section, Ingredient, Amount)
             
     })
     
@@ -119,18 +124,29 @@ server <- function(input, output) {
             return(writeLines("None"))
         }
         new <- as.data.frame(filtered())%>%
-            filter(.$Store.Section == "Meat")%>%
+            filter(.$Store.Section == "Meat/Seafood")%>%
             mutate(Item = paste0(.$Ingredient," ", .$Amount))
         ifelse(length(new$Ingredient) > 0,
                return(writeLines(new$Item)),
                return(writeLines("None")))
     })
-    output$grocery <- renderPrint({
+    output$frozen <- renderPrint({
         if(is.null(input$recipes)){
             return(writeLines("None"))
         }
         new <- as.data.frame(filtered())%>%
-            filter(.$Store.Section == "Grocery")%>%
+            filter(.$Store.Section == "Frozen")%>%
+            mutate(Item = paste0(.$Ingredient," ", .$Amount))
+        ifelse(length(new$Ingredient) > 0,
+               return(writeLines(new$Item)),
+               return(writeLines("None")))
+    })
+    output$bakery <- renderPrint({
+        if(is.null(input$recipes)){
+            return(writeLines("None"))
+        }
+        new <- as.data.frame(filtered())%>%
+            filter(.$Store.Section == "Bakery")%>%
             mutate(Item = paste0(.$Ingredient," ", .$Amount))
         ifelse(length(new$Ingredient) > 0,
                return(writeLines(new$Item)),
